@@ -4,6 +4,7 @@ using Vuforia;
 public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
     private HomerScript homerScript;
+	public AudioClip doh;
 
 	void Start ()
     {

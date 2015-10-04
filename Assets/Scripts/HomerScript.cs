@@ -5,6 +5,7 @@ using Vuforia;
 public class HomerScript : MonoBehaviour, ITrackableEventHandler {
 
     public int homerId;
+	public AudioClip doh;
 
     private GameObject board;
     private BoardScript boardScript;
@@ -31,6 +32,8 @@ public class HomerScript : MonoBehaviour, ITrackableEventHandler {
         if (!boardDetected || ! active)
             return;
         SetVisible(false);
+		GetComponent<AudioSource>().clip = doh;
+		GetComponent<AudioSource> ().PlayOneShot(GetComponent<AudioSource>().clip);
     }
 	
 	void FixedUpdate ()
