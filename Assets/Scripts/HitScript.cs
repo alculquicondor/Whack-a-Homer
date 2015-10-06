@@ -35,6 +35,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler, ITrackableEv
         SetVisible(false);
 		GetComponent<AudioSource>().clip = doh;
 		GetComponent<AudioSource> ().PlayOneShot(GetComponent<AudioSource>().clip);
+        boardScript.counter += 1;
     }
 
     public void OnButtonReleased(VirtualButtonAbstractBehaviour vb)
