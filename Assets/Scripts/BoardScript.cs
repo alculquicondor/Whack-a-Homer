@@ -51,7 +51,7 @@ public class BoardScript : MonoBehaviour {
             timeText.text = string.Format("{0:00}:{1:00}", seconds / 60, seconds % 60);
             hitsText.text = string.Format("{0:00}", counter);
         }
-        else if (Input.GetMouseButtonDown(0))
+		else if (Cardboard.SDK.Triggered)
         {
             Application.LoadLevel(Application.loadedLevel);
         }
