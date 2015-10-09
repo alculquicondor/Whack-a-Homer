@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using Vuforia;
 
-public class BoardScript : MonoBehaviour {
+public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
     public float changeTimerLenght, gameTimerLenght;
     public int homerId, winCounter, counter;
-    public TextMesh timeText, hitsText, endText, continueText;
+    public TextMesh timeText, hitsText, endText, continueText, trackText;
 
     private int prevHomerId;
     private System.Random random;
@@ -21,7 +21,8 @@ public class BoardScript : MonoBehaviour {
         counter = 0;
         finishedGame = false;
         ObjectTracker tracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-        tracker.PersistExtendedTracking(true);
+        Debug.Log(tracker.PersistExtendedTracking(true));
+        GetComponent<TrackableBehaviour>().RegisterTrackableEventHandler(this);
 	}
 	
 	void FixedUpdate ()
@@ -58,5 +59,13 @@ public class BoardScript : MonoBehaviour {
         {
             Application.LoadLevel(Application.loadedLevel);
         }
+    }
+
+    public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus)
+    {
+        if (previousStatus < TrackableBehaviour.Status.DETECTED && newStatus >= TrackableBehaviour.Status.DETECTED)
+            trackText.text = "";
+        else if (previousStatus >= TrackableBehaviour.Status.DETECTED && newStatus < TrackableBehaviour.Status.DETECTED)
+            trackText.text = "Marcador fuera de alcance";
     }
 }

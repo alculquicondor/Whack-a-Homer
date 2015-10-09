@@ -45,7 +45,8 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler, ITrackableEv
     public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus)
     {
         boardDetected = newStatus >= TrackableBehaviour.Status.DETECTED;
-        if (previousStatus < TrackableBehaviour.Status.DETECTED && newStatus >= TrackableBehaviour.Status.DETECTED)
+        if ((previousStatus < TrackableBehaviour.Status.DETECTED && newStatus >= TrackableBehaviour.Status.DETECTED) ||
+            (previousStatus < TrackableBehaviour.Status.EXTENDED_TRACKED && newStatus >= TrackableBehaviour.Status.EXTENDED_TRACKED))
             justDetected = true;
     }
 
