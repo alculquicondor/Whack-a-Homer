@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Vuforia;
 
 public class BoardScript : MonoBehaviour {
 
@@ -19,6 +20,8 @@ public class BoardScript : MonoBehaviour {
         prevHomerId = -1;
         counter = 0;
         finishedGame = false;
+        ObjectTracker tracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+        tracker.PersistExtendedTracking(true);
 	}
 	
 	void FixedUpdate ()
