@@ -43,13 +43,13 @@ public class BoardScript : MonoBehaviour {
             {
                 finishedGame = true;
                 homerId = -1;
-                continueText.text = "Hit trigger to restart";
-                endText.text = counter >= winCounter ? "You win" : "You lose";
+                continueText.text = "Tap para reintentar";
+                endText.text = counter >= winCounter ? "¡Ganaste!" : "¡Perdiste!";
             }
 
             int seconds = (int)gameTimer;
             timeText.text = string.Format("{0:00}:{1:00}", seconds / 60, seconds % 60);
-            hitsText.text = string.Format("{0:00}", counter);
+            hitsText.text = string.Format("{0:00}", winCounter - counter);
         }
 		else if (Cardboard.SDK.Triggered)
         {
