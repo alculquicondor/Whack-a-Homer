@@ -5,7 +5,8 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
     public float changeTimerLenght, gameTimerLenght;
     public int homerId, winCounter, counter;
-    public TextMesh timeText, hitsText, endText, continueText, trackText;
+    public TextMesh timeText, hitsText, endText, continueText;
+    public GameObject trackText;
 
     private int prevHomerId;
     private System.Random random;
@@ -64,8 +65,11 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus)
     {
         if (previousStatus < TrackableBehaviour.Status.DETECTED && newStatus >= TrackableBehaviour.Status.DETECTED)
-            trackText.text = "";
-        else if (previousStatus >= TrackableBehaviour.Status.DETECTED && newStatus < TrackableBehaviour.Status.DETECTED)
-            trackText.text = "Marcador fuera de alcance";
+        {
+            trackText.SetActive(false);
+        }
+        else if (previousStatus >= TrackableBehaviour.Status.DETECTED && newStatus < TrackableBehaviour.Status.DETECTED) {
+            trackText.SetActive(true);
+        }
     }
 }
