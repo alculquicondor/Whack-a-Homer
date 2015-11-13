@@ -1,12 +1,24 @@
 ﻿using UnityEngine;
 using Vuforia;
 
+public enum HomerColor
+{
+    AMARILLO,
+    AZUL,
+    BLANCO,
+    MORADO,
+    NEGRO,
+    ROJO,
+    VERDE
+};
+
 public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
     public float changeTimerLenght, gameTimerLenght;
-    public int homerId, winCounter, counter;
-    public TextMesh timeText, hitsText, endText, continueText;
+    public int homerId, counter;
+    public TextMesh timeText, hitsText, endText, continueText, colorText;
     public GameObject trackText;
+    public HomerColor previousColor, currentColor;
 
     private int prevHomerId;
     private System.Random random;
@@ -21,10 +33,23 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         prevHomerId = -1;
         counter = 0;
         finishedGame = false;
+        previousColor = HomerColor.NEGRO;
+
+        ChangeColor();
+
         ObjectTracker tracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-        Debug.Log(tracker.PersistExtendedTracking(true));
+        tracker.PersistExtendedTracking(true);
         GetComponent<TrackableBehaviour>().RegisterTrackableEventHandler(this);
 	}
+
+    public void ChangeColor()
+    {
+        currentColor = (HomerColor)random.Next(7);
+        while (currentColor == previousColor)
+            currentColor = (HomerColor)random.Next(7);
+        colorText.text = currentColor.ToString();
+        previousColor = currentColor;
+    }
 	
 	void FixedUpdate ()
     {
@@ -44,17 +69,19 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         if (!finishedGame)
         {
             gameTimer -= Time.deltaTime;
-            if (gameTimer <= 0 || counter >= winCounter)
+            if (gameTimer <= 0)
             {
                 finishedGame = true;
                 homerId = -1;
                 continueText.text = "Tap para reintentar";
-                endText.text = counter >= winCounter ? "¡Ganaste!" : "¡Perdiste!";
+                endText.text = counter > 0 ?
+                    string.Format("¡Obtuviste {0} puntos!", counter) :
+                    "Continúa practicando";
             }
 
             int seconds = (int)gameTimer;
             timeText.text = string.Format("{0:00}:{1:00}", seconds / 60, seconds % 60);
-            hitsText.text = string.Format("{0:00}", winCounter - counter);
+            hitsText.text = string.Format("{0:00}", counter);
         }
 		else if (Cardboard.SDK.Triggered)
         {
@@ -64,12 +91,6 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
     public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus)
     {
-        if (previousStatus < TrackableBehaviour.Status.DETECTED && newStatus >= TrackableBehaviour.Status.DETECTED)
-        {
-            trackText.SetActive(false);
-        }
-        else if (previousStatus >= TrackableBehaviour.Status.DETECTED && newStatus < TrackableBehaviour.Status.DETECTED) {
-            trackText.SetActive(true);
-        }
+        trackText.SetActive(newStatus < TrackableBehaviour.Status.DETECTED);
     }
 }

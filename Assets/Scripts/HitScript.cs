@@ -5,10 +5,13 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
 	public AudioClip doh;
     public int homerId;
+    public Texture []textures;
 
+    private System.Random random;
+    private HomerColor color;
     private GameObject homer;
     private BoardScript boardScript;
-    private bool active, boardDetected, justDetected;
+    private bool active, justDetected;
     private int prevHomerId;
 
 	void Start ()
@@ -16,29 +19,42 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
         homer = transform.Find("homer").gameObject;
         boardScript = GameObject.Find("Board").GetComponent<BoardScript>();
 
+        random = new System.Random();
         prevHomerId = -1;
         active = false;
-        boardDetected = false;
         GetComponent<VirtualButtonBehaviour>().RegisterEventHandler(this);
 	}
 
     void SetVisible(bool val)
     {
-        GetComponentInChildren<Renderer>().enabled = boardDetected && active && val;
+        homer.SetActive(val);
     }
 
     public void OnButtonPressed(VirtualButtonAbstractBehaviour vb)
     {
-        if (!boardDetected || ! active)
+        if (!active)
             return;
+
         SetVisible(false);
 		GetComponent<AudioSource>().clip = doh;
-		GetComponent<AudioSource> ().PlayOneShot(GetComponent<AudioSource>().clip);
-        boardScript.counter += 1;
+		GetComponent<AudioSource>().PlayOneShot(GetComponent<AudioSource>().clip);
+
+        if (boardScript.currentColor == color)
+            boardScript.counter += 1;
+        else if (boardScript.counter > 0)
+            boardScript.counter -= 1;
+
+        boardScript.ChangeColor();
     }
 
     public void OnButtonReleased(VirtualButtonAbstractBehaviour vb)
     {
+    }
+
+    public void ChangeColor()
+    {
+        color = (HomerColor)random.Next(7);
+        homer.GetComponent<Renderer>().material.mainTexture = textures[(int)color];
     }
 
 	void FixedUpdate ()
@@ -46,7 +62,9 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
         if ((prevHomerId != homerId) == (boardScript.homerId == homerId))
         {
             active = boardScript.homerId == homerId;
-            homer.SetActive(active);
+            if (active)
+                ChangeColor();
+            SetVisible(active);
         }
         prevHomerId = boardScript.homerId;
 	}
