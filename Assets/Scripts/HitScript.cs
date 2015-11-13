@@ -1,25 +1,24 @@
 ﻿using UnityEngine;
 using Vuforia;
 
-public class HitScript : MonoBehaviour, IVirtualButtonEventHandler, ITrackableEventHandler {
+public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
 	public AudioClip doh;
     public int homerId;
 
-    private GameObject board;
+    private GameObject homer;
     private BoardScript boardScript;
     private bool active, boardDetected, justDetected;
     private int prevHomerId;
 
 	void Start ()
     {
-        board = GameObject.Find("Board");
-        boardScript = board.GetComponent<BoardScript>();
+        homer = transform.Find("homer").gameObject;
+        boardScript = GameObject.Find("Board").GetComponent<BoardScript>();
 
         prevHomerId = -1;
         active = false;
         boardDetected = false;
-        board.GetComponent<TrackableBehaviour>().RegisterTrackableEventHandler(this);
         GetComponent<VirtualButtonBehaviour>().RegisterEventHandler(this);
 	}
 
@@ -42,28 +41,14 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler, ITrackableEv
     {
     }
 
-    public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus)
-    {
-        boardDetected = newStatus >= TrackableBehaviour.Status.DETECTED;
-        if ((previousStatus < TrackableBehaviour.Status.DETECTED && newStatus >= TrackableBehaviour.Status.DETECTED) ||
-            (previousStatus < TrackableBehaviour.Status.EXTENDED_TRACKED && newStatus >= TrackableBehaviour.Status.EXTENDED_TRACKED))
-            justDetected = true;
-    }
-
 	void FixedUpdate ()
     {
-        justDetected = false;
         if ((prevHomerId != homerId) == (boardScript.homerId == homerId))
         {
             active = boardScript.homerId == homerId;
-            SetVisible(active);
+            homer.SetActive(active);
         }
         prevHomerId = boardScript.homerId;
 	}
 
-    void LateUpdate ()
-    {
-        if (justDetected)
-            SetVisible(false);
-    }
 }
