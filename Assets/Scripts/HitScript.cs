@@ -4,6 +4,7 @@ using Vuforia;
 public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
 	public AudioClip doh;
+	public AudioClip woohoo;
     public int homerId;
     public Texture []textures;
 
@@ -36,13 +37,21 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
             return;
 
         SetVisible(false);
-		GetComponent<AudioSource>().clip = doh;
-		GetComponent<AudioSource>().PlayOneShot(GetComponent<AudioSource>().clip);
 
-        if (boardScript.currentColor == color)
-            boardScript.counter += 1;
-        else if (boardScript.counter > 0)
-            boardScript.counter -= 1;
+
+
+		if (boardScript.currentColor == color) {
+			boardScript.counter += 1;
+			GetComponent<AudioSource> ().clip = woohoo;
+			GetComponent<AudioSource> ().PlayOneShot (GetComponent<AudioSource> ().clip);
+		} else {
+			if(boardScript.counter> 0){
+				boardScript.counter -= 1;
+			}
+			GetComponent<AudioSource> ().clip = doh;
+			GetComponent<AudioSource> ().PlayOneShot (GetComponent<AudioSource> ().clip);
+		}
+
 
         boardScript.ChangeColor();
     }
