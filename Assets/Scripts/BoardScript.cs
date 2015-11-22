@@ -15,17 +15,17 @@ public enum HomerColor
 public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
     public float changeHomerTimerLenght, gameTimerLenght, colorTimerLength;
-    public int homerId, counter;
+    public int homerId;
     public TextMesh timeText, hitsText, endText, continueText;
-    public GameObject trackText, border;
+    public GameObject trackText, colorLight;
     public HomerColor previousColor, currentColor;
 
-    private int prevHomerId;
+    private int prevHomerId, counter;
     private System.Random random;
     private float changeHomerTimer, gameTimer, colorTimer;
     private bool finishedGame, newColor;
-    private Color[] colors = new Color[]{ Color.yellow, Color.blue, Color.white,
-        Color.magenta, Color.black, Color.red, Color.green };
+    private Color[] colors = new Color[]{ Color.yellow, new Color(0, 0, .7f), Color.white,
+        new Color(.34f, .07f, .44f), Color.black, new Color(.7f, 0, 0), new Color(0, .7f, 0) };
 
 	void Start ()
     {
@@ -45,21 +45,25 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         GetComponent<TrackableBehaviour>().RegisterTrackableEventHandler(this);
 	}
 
-    public void ChangeColor()
+    public void ChangeColor(int points = 0)
     {
         homerId = -1;
-        currentColor = (HomerColor)random.Next(7);
+        currentColor = (HomerColor)(random.Next() % 7);
         while (currentColor == previousColor)
-            currentColor = (HomerColor)random.Next(7);
+            currentColor = (HomerColor)(random.Next() % 7);
         previousColor = currentColor;
         colorTimer = colorTimerLength;
         changeHomerTimer = 0;
-        border.SetActive(true);
-        foreach (Renderer rend in border.GetComponentsInChildren<Renderer>())
-        {
-            rend.material.SetColor("_TintColor", colors[(int)currentColor]);
-        }
+        colorLight.SetActive(false);
+        colorLight.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)currentColor]);
         newColor = true;
+        if (points != 0)
+        {
+            counter += points;
+            if (counter < 0)
+                counter = 0;
+            hitsText.color = points > 0 ? new Color(0, .8f, 0) : new Color(.9f, .6f, 0);
+        }
     }
 	
 	void FixedUpdate ()
@@ -90,7 +94,8 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 continueText.text = "Tap para reintentar";
                 endText.text = counter > 0 ?
                     string.Format("¡Obtuviste {0} puntos!", counter) :
-                    "Continúa practicando";
+                    "Continua practicando";
+                trackText.SetActive(false);
             }
 
             int seconds = (int)gameTimer;
@@ -102,21 +107,24 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 colorTimer -= Time.deltaTime;
                 if (colorTimer <= 0)
                 {
-                    border.SetActive(false);
+                    colorLight.SetActive(false);
                     changeHomerTimer = 0;
                     newColor = false;
+                    hitsText.color = Color.white;
+                } else if (colorTimer <= 0.7 * colorTimerLength)
+                {
+                    colorLight.SetActive(true);
                 }
             }
         }
-		else if (Cardboard.SDK.Triggered)
-        {
+
+		if (Cardboard.SDK.Triggered)
             Application.LoadLevel(Application.loadedLevel);
-        }
     }
 
     public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus)
     {
-        trackText.SetActive(newStatus < TrackableBehaviour.Status.DETECTED);
+        trackText.SetActive(newStatus < TrackableBehaviour.Status.DETECTED && !finishedGame);
         if (newStatus >= TrackableBehaviour.Status.DETECTED && previousStatus < TrackableBehaviour.Status.DETECTED)
             ChangeColor();
     }

@@ -38,22 +38,20 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
         SetVisible(false);
 
-
+        int points = 0;
 
 		if (boardScript.currentColor == color) {
-			boardScript.counter += 1;
+            points = 1;
 			GetComponent<AudioSource> ().clip = woohoo;
 			GetComponent<AudioSource> ().PlayOneShot (GetComponent<AudioSource> ().clip);
 		} else {
-			if(boardScript.counter> 0){
-				boardScript.counter -= 1;
-			}
+            points = -1;
 			GetComponent<AudioSource> ().clip = doh;
 			GetComponent<AudioSource> ().PlayOneShot (GetComponent<AudioSource> ().clip);
 		}
 
 
-        boardScript.ChangeColor();
+        boardScript.ChangeColor(points);
     }
 
     public void OnButtonReleased(VirtualButtonAbstractBehaviour vb)
