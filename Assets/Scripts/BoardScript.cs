@@ -55,7 +55,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         colorTimer = colorTimerLength;
         changeHomerTimer = 0;
         colorLight.SetActive(false);
-        colorLight.GetComponent<Light>().color = colors[(int)currentColor];
+        colorLight.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)currentColor]);
         newColor = true;
         if (points != 0)
         {
