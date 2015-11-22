@@ -17,7 +17,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     public float changeHomerTimerLenght, gameTimerLenght, colorTimerLength;
     public int homerId;
     public TextMesh timeText, hitsText, endText, continueText;
-    public GameObject trackText, colorLight;
+    public GameObject trackText, colorArea, ColorLight;
     public HomerColor previousColor, currentColor;
 
     private int prevHomerId, counter;
@@ -54,8 +54,10 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         previousColor = currentColor;
         colorTimer = colorTimerLength;
         changeHomerTimer = 0;
-        colorLight.SetActive(false);
-        colorLight.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)currentColor]);
+        colorArea.SetActive(false);
+        colorArea.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)currentColor]);
+        ColorLight.SetActive(false);
+        ColorLight.GetComponent<Light>().color = colors[(int)currentColor];
         newColor = true;
         if (points != 0)
         {
@@ -107,13 +109,15 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 colorTimer -= Time.deltaTime;
                 if (colorTimer <= 0)
                 {
-                    colorLight.SetActive(false);
+                    colorArea.SetActive(false);
+                    ColorLight.SetActive(false);
                     changeHomerTimer = 0;
                     newColor = false;
                     hitsText.color = Color.white;
                 } else if (colorTimer <= 0.7 * colorTimerLength)
                 {
-                    colorLight.SetActive(true);
+                    colorArea.SetActive(true);
+                    ColorLight.SetActive(true);
                 }
             }
         }
