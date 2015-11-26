@@ -60,7 +60,10 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
     public void ChangeColor()
     {
-        color = (HomerColor)random.Next(7);
+        if (boardScript.noHits % boardScript.maxNoHits == 0)
+            color = boardScript.currentColor;
+        else
+            color = (HomerColor)random.Next(7);
         homer.GetComponent<Renderer>().material.mainTexture = textures[(int)color];
     }
 

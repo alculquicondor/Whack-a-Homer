@@ -15,10 +15,13 @@ public enum HomerColor
 public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
     public float changeHomerTimerLenght, gameTimerLenght, colorTimerLength;
-    public int homerId;
+    public int homerId { get; private set; }
+    public int noHits { get; private set; }
+    public int maxNoHits;
     public TextMesh timeText, hitsText, endText, continueText;
     public GameObject trackText, colorArea, ColorLight;
-    public HomerColor previousColor, currentColor;
+    public HomerColor previousColor;
+    public HomerColor currentColor { get; private set; }
 
     private int prevHomerId, counter;
     private System.Random random;
@@ -37,6 +40,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         counter = 0;
         finishedGame = false;
         previousColor = HomerColor.NEGRO;
+        noHits = 0;
 
         ChangeColor();
 
@@ -59,6 +63,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         ColorLight.SetActive(false);
         ColorLight.GetComponent<Light>().color = colors[(int)currentColor];
         newColor = true;
+        noHits = 0;
         if (points != 0)
         {
             counter += points;
@@ -80,6 +85,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                     homerId = random.Next(0, 6);
                 changeHomerTimer = changeHomerTimerLenght;
                 prevHomerId = homerId;
+                ++noHits;
             }
         }
 	}
