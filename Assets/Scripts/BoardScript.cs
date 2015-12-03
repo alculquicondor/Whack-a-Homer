@@ -18,8 +18,8 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     public int homerId { get; private set; }
     public int noHits { get; private set; }
     public int maxNoHits;
-    public TextMesh timeText, hitsText, endText, continueText;
-    public GameObject trackText, colorArea, ColorLight;
+    public TextMesh timeText, hitsText;
+    public GameObject trackText, colorArea, ColorLight, finishText;
     public HomerColor previousColor;
     public HomerColor currentColor { get; private set; }
 
@@ -99,10 +99,10 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
             {
                 finishedGame = true;
                 homerId = -1;
-                continueText.text = "Tap para reintentar";
-                endText.text = counter > 0 ?
-                    string.Format("¡Obtuviste {0} puntos!", counter) :
-                    "Continua practicando";
+                finishText.SetActive(true);
+                if (counter > 0)
+                    finishText.transform.Find("Points").GetComponent<TextMesh>().text =
+                        string.Format("¡Obtuviste {0} puntos!", counter);
                 trackText.SetActive(false);
             }
 
