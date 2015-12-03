@@ -7,7 +7,6 @@ public enum HomerColor
     AZUL,
     BLANCO,
     MORADO,
-    NEGRO,
     ROJO,
     VERDE
 };
@@ -23,12 +22,13 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     public HomerColor previousColor;
     public HomerColor currentColor { get; private set; }
 
-    private int prevHomerId, counter;
+    private int prevHomerId;
+    public int counter {get; private set;}
     private System.Random random;
     private float changeHomerTimer, gameTimer, colorTimer;
-    private bool finishedGame, newColor;
+    private bool finishedGame, newColor, boardTracked;
     private Color[] colors = new Color[]{ Color.yellow, new Color(0, 0, .7f), Color.white,
-        new Color(.34f, .07f, .44f), Color.black, new Color(.7f, 0, 0), new Color(0, .7f, 0) };
+        new Color(.34f, .07f, .44f), new Color(.7f, 0, 0), new Color(0, .7f, 0) };
 
 	void Start ()
     {
@@ -39,8 +39,9 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         prevHomerId = -1;
         counter = 0;
         finishedGame = false;
-        previousColor = HomerColor.NEGRO;
+        previousColor = HomerColor.AMARILLO;
         noHits = 0;
+        boardTracked = true;
 
         ChangeColor();
 
@@ -52,9 +53,9 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     public void ChangeColor(int points = 0)
     {
         homerId = -1;
-        currentColor = (HomerColor)(random.Next() % 7);
+        currentColor = (HomerColor)(random.Next() % 6);
         while (currentColor == previousColor)
-            currentColor = (HomerColor)(random.Next() % 7);
+            currentColor = (HomerColor)(random.Next() % 6);
         previousColor = currentColor;
         colorTimer = colorTimerLength;
         changeHomerTimer = 0;
@@ -115,15 +116,18 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 colorTimer -= Time.deltaTime;
                 if (colorTimer <= 0)
                 {
-                    colorArea.SetActive(false);
                     ColorLight.SetActive(false);
+                    if (counter > 4)
+                    {
+                        colorArea.SetActive(false);
+                    }
                     changeHomerTimer = 0;
                     newColor = false;
                     hitsText.color = Color.white;
                 } else if (colorTimer <= 0.7 * colorTimerLength)
                 {
-                    colorArea.SetActive(true);
-                    ColorLight.SetActive(true);
+                    colorArea.SetActive(boardTracked);
+                    ColorLight.SetActive(boardTracked);
                 }
             }
         }
@@ -134,8 +138,9 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
     public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus)
     {
-        trackText.SetActive(newStatus < TrackableBehaviour.Status.DETECTED && !finishedGame);
-        if (newStatus >= TrackableBehaviour.Status.DETECTED && previousStatus < TrackableBehaviour.Status.DETECTED)
+        boardTracked = newStatus >= TrackableBehaviour.Status.DETECTED;
+        trackText.SetActive(!boardTracked && !finishedGame);
+        if (boardTracked && previousStatus < TrackableBehaviour.Status.DETECTED)
             ChangeColor();
     }
 }
