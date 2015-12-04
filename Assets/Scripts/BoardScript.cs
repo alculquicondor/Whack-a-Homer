@@ -8,12 +8,13 @@ public enum HomerColor
     BLANCO,
     MORADO,
     ROJO,
-    VERDE
+    VERDE,
+    ORO
 };
 
 public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
-    public float changeHomerTimerLenght, gameTimerLenght, colorTimerLength;
+    public float changeHomerTimerLenght, gameTimerLenght, colorTimerLength, goldTimerLength;
     public int homerId { get; private set; }
     public int noHits { get; private set; }
     public int maxNoHits;
@@ -21,10 +22,13 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     public GameObject trackText, colorArea, ColorLight, finishText;
     public HomerColor previousColor;
     public HomerColor currentColor { get; private set; }
+    public AudioSource mainSound;
+    public AudioClip soundtrack, goldSoundtrack;
 
     private int prevHomerId;
-    public int counter {get; private set;}
+    public int counter { get; private set; }
     private System.Random random;
+    public float goldTimer { get; private set; }
     private float changeHomerTimer, gameTimer, colorTimer;
     private bool finishedGame, newColor, boardTracked;
     private Color[] colors = new Color[]{ Color.yellow, new Color(0, 0, .7f), Color.white,
@@ -42,6 +46,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         previousColor = HomerColor.AMARILLO;
         noHits = 0;
         boardTracked = true;
+        goldTimer = 0;
 
         ChangeColor();
 
@@ -50,20 +55,37 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         GetComponent<TrackableBehaviour>().RegisterTrackableEventHandler(this);
 	}
 
-    public void ChangeColor(int points = 0)
+    public void ChangeColor(int points = 0, bool gold = false)
     {
         homerId = -1;
-        currentColor = (HomerColor)(random.Next() % 6);
-        while (currentColor == previousColor)
+        if (gold)
+        {
+            if (goldTimer == 0)
+            {
+                goldTimer = .1e-5f;
+                mainSound.clip = goldSoundtrack;
+                mainSound.Play();
+            }
+            colorArea.SetActive(true);
+            colorArea.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)HomerColor.AMARILLO]);
+            ColorLight.SetActive(true);
+            ColorLight.GetComponent<Light>().color = colors[(int)HomerColor.AMARILLO];
+            changeHomerTimer = .2f;
+        }
+        else
+        {
+            changeHomerTimer = 0;
+            colorTimer = colorTimerLength;
             currentColor = (HomerColor)(random.Next() % 6);
-        previousColor = currentColor;
-        colorTimer = colorTimerLength;
-        changeHomerTimer = 0;
-        colorArea.SetActive(false);
-        colorArea.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)currentColor]);
-        ColorLight.SetActive(false);
-        ColorLight.GetComponent<Light>().color = colors[(int)currentColor];
-        newColor = true;
+            while (currentColor == previousColor)
+                currentColor = (HomerColor)(random.Next() % 6);
+            previousColor = currentColor;
+            colorArea.SetActive(false);
+            colorArea.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)currentColor]);
+            ColorLight.SetActive(false);
+            ColorLight.GetComponent<Light>().color = colors[(int)currentColor];
+            newColor = true;
+        }
         noHits = 0;
         if (points != 0)
         {
@@ -117,7 +139,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 if (colorTimer <= 0)
                 {
                     ColorLight.SetActive(false);
-                    if (counter > 4)
+                    if (counter > 10)
                     {
                         colorArea.SetActive(false);
                     }
@@ -128,6 +150,18 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 {
                     colorArea.SetActive(boardTracked);
                     ColorLight.SetActive(boardTracked);
+                }
+            }
+
+            if (goldTimer != 0)
+            {
+                goldTimer += Time.deltaTime;
+                if (goldTimer >= goldTimerLength)
+                {
+                    goldTimer = 0;
+                    mainSound.clip = soundtrack;
+                    mainSound.Play();
+                    ChangeColor();
                 }
             }
         }

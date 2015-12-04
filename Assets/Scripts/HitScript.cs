@@ -7,6 +7,9 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 	public AudioClip woohoo;
     public int homerId;
     public Texture []textures;
+    public Material regular, gold;
+    public int goldStart;
+    public float goldProbability;
 
     private System.Random random;
     private HomerColor color;
@@ -59,8 +62,8 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
         int points = 0;
 
-		if (boardScript.currentColor == color) {
-            points = 1;
+		if (boardScript.currentColor == color || color == HomerColor.ORO) {
+            points = color == HomerColor.ORO ? 1 : 2;
 			GetComponent<AudioSource> ().clip = woohoo;
 			GetComponent<AudioSource> ().PlayOneShot (GetComponent<AudioSource> ().clip);
 		} else {
@@ -69,8 +72,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 			GetComponent<AudioSource> ().PlayOneShot (GetComponent<AudioSource> ().clip);
 		}
 
-
-        boardScript.ChangeColor(points);
+        boardScript.ChangeColor(points, color == HomerColor.ORO);
     }
 
     public void OnButtonReleased(VirtualButtonAbstractBehaviour vb)
@@ -79,12 +81,23 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
     public void ChangeColor()
     {
-        int noHits = Mathf.Min(boardScript.counter / 2 + 1, boardScript.maxNoHits);
+        int noHits = Mathf.Min(boardScript.counter / 4 + 1, boardScript.maxNoHits);
         if (boardScript.noHits % noHits == 0)
             color = boardScript.currentColor;
         else
-            color = (HomerColor)random.Next(6);
-        homer.GetComponent<Renderer>().material.mainTexture = textures[(int)color];
+            color = (HomerColor)(random.Next() % 6);
+        Renderer homerRenderer = homer.GetComponent<Renderer>();
+        if ((boardScript.counter > goldStart && random.NextDouble() < goldProbability) || boardScript.goldTimer > 0)
+        {
+            color = HomerColor.ORO;
+            homerRenderer.material = gold;
+        }
+        else
+        {
+            homerRenderer.material = regular;
+            homerRenderer.material.mainTexture = textures[(int)color];
+            homer.GetComponent<Renderer>().material.mainTexture = textures[(int)color];
+        }
     }
 
 	void FixedUpdate ()
