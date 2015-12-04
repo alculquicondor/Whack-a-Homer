@@ -3,8 +3,7 @@ using Vuforia;
 
 public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
-	public AudioClip doh;
-	public AudioClip woohoo;
+	public AudioClip doh, woohoo, whistle;
     public int homerId;
     public Texture []textures;
     public Material regular, gold;
@@ -64,12 +63,10 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
 		if (boardScript.currentColor == color || color == HomerColor.ORO) {
             points = color == HomerColor.ORO ? 1 : 2;
-			GetComponent<AudioSource> ().clip = woohoo;
-			GetComponent<AudioSource> ().PlayOneShot (GetComponent<AudioSource> ().clip);
+            GetComponent<AudioSource>().PlayOneShot(woohoo);
 		} else {
             points = -1;
-			GetComponent<AudioSource> ().clip = doh;
-			GetComponent<AudioSource> ().PlayOneShot (GetComponent<AudioSource> ().clip);
+            GetComponent<AudioSource>().PlayOneShot(doh);
 		}
 
         boardScript.ChangeColor(points, color == HomerColor.ORO);
@@ -91,6 +88,8 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
         {
             color = HomerColor.ORO;
             homerRenderer.material = gold;
+            if (boardScript.goldTimer == 0)
+                GetComponent<AudioSource>().PlayOneShot(whistle);
         }
         else
         {
