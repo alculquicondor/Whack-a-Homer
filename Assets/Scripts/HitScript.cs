@@ -81,7 +81,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
     public void ChangeColor()
     {
-        int noHits = Mathf.Min(boardScript.counter / 4 + 1, boardScript.maxNoHits);
+        int noHits = Mathf.Min(boardScript.counter / 6 + 1, boardScript.maxNoHits);
         if (boardScript.noHits % noHits == 0)
             color = boardScript.currentColor;
         else
