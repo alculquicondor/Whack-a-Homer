@@ -159,7 +159,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 if (colorTimer <= 0)
                 {
                     colorLight.SetActive(false);
-                    if (counter >= 15)
+                    if (counter >= 10)
                     {
                         colorArea.SetActive(false);
                     }

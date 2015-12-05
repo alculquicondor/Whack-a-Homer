@@ -51,8 +51,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
         {
             homer.transform.localPosition = new Vector3(-6, 0.12f - (.1f * boardScript.changeHomerTimerLenght - homerTime) * .5f, 0);
         }
-        arrow.transform.Rotate(new Vector3(0, 0, Time.deltaTime * 60));
-        arrow.transform.localPosition = new Vector3(.1f, .56f + Mathf.Sin(homerTime * 4f) * .05f, 0);
+        arrow.transform.localPosition = new Vector3(.1f, .45f + Mathf.Sin(homerTime * 4f) * .05f, 0);
     }
 
     public void OnButtonPressed(VirtualButtonAbstractBehaviour vb)
@@ -99,10 +98,12 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
             homerRenderer.material = regular;
             homerRenderer.material.mainTexture = textures[(int)color];
             homer.GetComponent<Renderer>().material.mainTexture = textures[(int)color];
+            /*
             arrow.GetComponent<Renderer>().material.SetColor("_Color", boardScript.colors[(int)color]);
+            arrow.transform.Find("part").GetComponent<Renderer>().material.SetColor("_Color", boardScript.colors[(int)color]);
+            */
         }
-        if (color == boardScript.currentColor &&
-            (boardScript.counter < 10 || boardScript.counter == 15 || boardScript.counter == 16))
+        if (color == boardScript.currentColor && boardScript.counter < 14)
             arrow.SetActive(active);
         else
             arrow.SetActive(false);
@@ -122,7 +123,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
         if (boardScript.homerId == homerId || (boardScript.goldTimer == 0 && (boardScript.homerId + 4) % 6 == homerId))
         {
             alternate = boardScript.homerId != homerId;
-            if (boardScript.gotGold || alternate && boardScript.counter < 4)
+            if (boardScript.gotGold || alternate && boardScript.counter < 3)
                 return;
             active = true;
             homerTime = 0;
