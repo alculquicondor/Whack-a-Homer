@@ -134,7 +134,8 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         if (!finishedGame && messageTimer == 0)
         {
             changeHomerTimerLenght -= Time.deltaTime * .008f;
-            colorTimerLength -= Time.deltaTime * .01f;
+            colorTimerLength -= Time.deltaTime * .009f;
+            mainSound.pitch += Time.deltaTime * .0005f;
             gameTimer -= Time.deltaTime;
             if (gameTimer <= 0)
             {
@@ -212,7 +213,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     {
         boardTracked = newStatus >= TrackableBehaviour.Status.DETECTED;
         trackText.SetActive(!boardTracked && !finishedGame);
-        if (boardTracked && previousStatus < TrackableBehaviour.Status.DETECTED)
+        if (boardTracked && previousStatus < TrackableBehaviour.Status.DETECTED && goldTimer == 0)
             ChangeColor();
     }
 }
