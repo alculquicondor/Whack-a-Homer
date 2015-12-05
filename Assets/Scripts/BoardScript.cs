@@ -19,11 +19,12 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     public int noHits { get; private set; }
     public int maxNoHits;
     public TextMesh timeText, hitsText;
-    public GameObject trackText, colorArea, ColorLight, message;
+    public GameObject trackText, colorArea, colorLight, message;
     public HomerColor previousColor;
     public HomerColor currentColor { get; private set; }
     public AudioSource mainSound;
     public AudioClip soundtrack, goldSoundtrack;
+    public bool gotGold;
 
     private int prevHomerId;
     public int counter { get; private set; }
@@ -47,6 +48,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
         noHits = 0;
         boardTracked = false;
         goldTimer = 0;
+        gotGold = false;
 
         ChangeColor();
 
@@ -70,7 +72,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
             counter += points;
             if (counter < 0)
                 counter = 0;
-            hitsText.color = points > 0 ? Color.white : new Color(.6f, .3f, 0);
+            hitsText.color = points > 0 ? new Color(.3f, 1, .3f) : new Color(1, .3f, .3f);
         }
         homerId = -1;
         if (gold)
@@ -83,8 +85,8 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
             }
             colorArea.SetActive(true);
             colorArea.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)HomerColor.AMARILLO]);
-            ColorLight.SetActive(true);
-            ColorLight.GetComponent<Light>().color = colors[(int)HomerColor.AMARILLO];
+            colorLight.SetActive(true);
+            colorLight.GetComponent<Light>().color = colors[(int)HomerColor.AMARILLO];
             changeHomerTimer = .2f;
         }
         else
@@ -99,8 +101,8 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 previousColor = currentColor;
                 colorArea.SetActive(false);
                 colorArea.GetComponent<Renderer>().material.SetColor("_EmissionColor", colors[(int)currentColor]);
-                ColorLight.SetActive(false);
-                ColorLight.GetComponent<Light>().color = colors[(int)currentColor];
+                colorLight.SetActive(false);
+                colorLight.GetComponent<Light>().color = colors[(int)currentColor];
             }
             newColor = true;
         }
@@ -122,6 +124,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 changeHomerTimer = changeHomerTimerLenght;
                 prevHomerId = homerId;
                 ++noHits;
+                gotGold = false;
             }
         }
 	}
@@ -130,6 +133,8 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     {
         if (!finishedGame && messageTimer == 0)
         {
+            changeHomerTimerLenght -= Time.deltaTime * .008f;
+            colorTimerLength -= Time.deltaTime * .01f;
             gameTimer -= Time.deltaTime;
             if (gameTimer <= 0)
             {
@@ -152,18 +157,27 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
                 colorTimer -= Time.deltaTime;
                 if (colorTimer <= 0)
                 {
-                    ColorLight.SetActive(false);
-                    if (counter >= 12)
+                    colorLight.SetActive(false);
+                    if (counter >= 15)
                     {
                         colorArea.SetActive(false);
                     }
                     changeHomerTimer = 0;
                     newColor = false;
                     hitsText.color = new Color(.7f, .7f, .7f);
-                } else if (colorTimer <= 0.7 * colorTimerLength)
+                } else if (colorTimer <= 0.8 * colorTimerLength)
                 {
                     colorArea.SetActive(boardTracked);
-                    ColorLight.SetActive(boardTracked);
+                    if (colorTimer > .68 * colorTimerLength)
+                        colorLight.SetActive(boardTracked);
+                    else if (colorTimer > .6 * colorTimerLength)
+                        colorLight.SetActive(false);
+                    else if (colorTimer > .48 * colorTimerLength)
+                        colorLight.SetActive(boardTracked);
+                    else if (colorTimer > .4 * colorTimerLength)
+                        colorLight.SetActive(false);
+                    else if (colorTimer > .28 * colorTimerLength)
+                        colorLight.SetActive(boardTracked);
                 }
             }
 

@@ -14,17 +14,18 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
     private HomerColor color;
     private GameObject homer;
     private BoardScript boardScript;
-    private bool active, justDetected;
-    private int prevHomerId;
+    private bool active;
     private float homerTime;
+    private int prevHomerId;
+    private bool alternate;
 
 	void Start ()
     {
         homer = transform.Find("homer").gameObject;
         boardScript = GameObject.Find("Board").GetComponent<BoardScript>();
 
-        random = new System.Random();
         prevHomerId = -1;
+        random = new System.Random(homerId * 10);
         active = false;
         GetComponent<VirtualButtonBehaviour>().RegisterEventHandler(this);
 	}
@@ -32,24 +33,19 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
     void Update ()
     {
         homerTime += Time.deltaTime;
-        if (homerTime > 2.4)
+        if (homerTime > .9 * boardScript.changeHomerTimerLenght)
         {
-            SetVisible(false);
+            homer.SetActive(false);
             active = false;
         }
-        else if (homerTime > 2)
+        else if (homerTime > .8 * boardScript.changeHomerTimerLenght)
         {
-            homer.transform.localPosition = new Vector3(-6, 0.15f - (homerTime - 2) * .5f, 0);
+            homer.transform.localPosition = new Vector3(-6, 0.15f - (homerTime - .8f * boardScript.changeHomerTimerLenght) *.5f, 0);
         }
-        else if (homerTime < 0.4f)
+        else if (homerTime < .1 * boardScript.changeHomerTimerLenght)
         {
-            homer.transform.localPosition = new Vector3(-6, -0.05f + homerTime * .5f, 0);
+            homer.transform.localPosition = new Vector3(-6, 0.15f - (.1f * boardScript.changeHomerTimerLenght - homerTime) * .5f, 0);
         }
-    }
-
-    void SetVisible(bool val)
-    {
-        homer.SetActive(val);
     }
 
     public void OnButtonPressed(VirtualButtonAbstractBehaviour vb)
@@ -57,7 +53,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
         if (!active || homerTime < 0.3f)
             return;
 
-        SetVisible(false);
+        homer.SetActive(false);
 
         int points = 0;
 
@@ -78,13 +74,13 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
     public void ChangeColor()
     {
-        int noHits = Mathf.Min(boardScript.counter / 6 + 1, boardScript.maxNoHits);
-        if (boardScript.noHits % noHits == 0)
+        int noHits = Mathf.Min(boardScript.counter / 20 + 1, boardScript.maxNoHits);
+        if (!alternate && boardScript.noHits % noHits == 0)
             color = boardScript.currentColor;
         else
             color = (HomerColor)(random.Next() % 6);
         Renderer homerRenderer = homer.GetComponent<Renderer>();
-        if ((boardScript.counter > goldStart && random.NextDouble() < goldProbability) || boardScript.goldTimer > 0)
+        if (((boardScript.counter > goldStart && random.NextDouble() < goldProbability) || boardScript.goldTimer > 0))
         {
             color = HomerColor.ORO;
             homerRenderer.material = gold;
@@ -101,17 +97,44 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
 	void FixedUpdate ()
     {
-        if ((prevHomerId != homerId) == (boardScript.homerId == homerId))
-        {
-            active = boardScript.homerId == homerId;
-            if (active)
-            {
-                homerTime = 0;
-                ChangeColor();
-            }
-            SetVisible(active);
-        }
+        if (boardScript.homerId == prevHomerId)
+            return;
         prevHomerId = boardScript.homerId;
+        if (boardScript.homerId == -1)
+        {
+            active = false;
+            homer.SetActive(false);
+            return;
+        }
+
+        if (boardScript.homerId == homerId || (boardScript.goldTimer == 0 && (boardScript.homerId + 4) % 6 == homerId))
+        {
+            alternate = boardScript.homerId != homerId;
+            if (boardScript.gotGold)
+                return;
+            active = true;
+            homerTime = 0;
+            homer.SetActive(true);
+            ChangeColor();
+            if (color == HomerColor.ORO)
+            {
+                boardScript.gotGold = true;
+                foreach (HitScript hs in GameObject.FindObjectsOfType<HitScript>())
+                    if (hs.homerId != homerId)
+                    {
+                        Debug.Log(hs.homerId);
+                        hs.active = false;
+                        hs.homer.SetActive(false);
+                    }
+            }
+        }
+        else if ((!alternate && boardScript.homerId != homerId) ||
+            (alternate && (boardScript.homerId + 4) % 6 != homerId))
+        {
+            active = false;
+            homer.SetActive(false);
+        }
+        
 	}
 
 }
