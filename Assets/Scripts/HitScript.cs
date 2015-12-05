@@ -102,7 +102,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
             arrow.GetComponent<Renderer>().material.SetColor("_Color", boardScript.colors[(int)color]);
         }
         if (color == boardScript.currentColor &&
-            (boardScript.counter < 6 || boardScript.counter == 15 || boardScript.counter == 16))
+            (boardScript.counter < 10 || boardScript.counter == 15 || boardScript.counter == 16))
             arrow.SetActive(active);
         else
             arrow.SetActive(false);
@@ -122,7 +122,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
         if (boardScript.homerId == homerId || (boardScript.goldTimer == 0 && (boardScript.homerId + 4) % 6 == homerId))
         {
             alternate = boardScript.homerId != homerId;
-            if (boardScript.gotGold)
+            if (boardScript.gotGold || alternate && boardScript.counter < 4)
                 return;
             active = true;
             homerTime = 0;
