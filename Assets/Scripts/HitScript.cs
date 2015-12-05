@@ -45,14 +45,14 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
             Deactivate();
         else if (homerTime > .8 * boardScript.changeHomerTimerLenght)
         {
-            homer.transform.localPosition = new Vector3(-6, 0.15f - (homerTime - .8f * boardScript.changeHomerTimerLenght) * .5f, 0);
+            homer.transform.localPosition = new Vector3(-6, 0.12f - (homerTime - .8f * boardScript.changeHomerTimerLenght) * .5f, 0);
         }
         else if (homerTime < .1 * boardScript.changeHomerTimerLenght)
         {
-            homer.transform.localPosition = new Vector3(-6, 0.15f - (.1f * boardScript.changeHomerTimerLenght - homerTime) * .5f, 0);
+            homer.transform.localPosition = new Vector3(-6, 0.12f - (.1f * boardScript.changeHomerTimerLenght - homerTime) * .5f, 0);
         }
         arrow.transform.Rotate(new Vector3(0, 0, Time.deltaTime * 60));
-        arrow.transform.localPosition = new Vector3(.1f, .72f + Mathf.Sin(homerTime * 5f) * .06f, 0);
+        arrow.transform.localPosition = new Vector3(.1f, .56f + Mathf.Sin(homerTime * 4f) * .05f, 0);
     }
 
     public void OnButtonPressed(VirtualButtonAbstractBehaviour vb)

@@ -52,9 +52,9 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
 
         ChangeColor();
 
+        GetComponent<TrackableBehaviour>().RegisterTrackableEventHandler(this);
         ObjectTracker tracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
         tracker.PersistExtendedTracking(true);
-        GetComponent<TrackableBehaviour>().RegisterTrackableEventHandler(this);
 	}
 
     void SetMessage(string instruction)
