@@ -33,7 +33,7 @@ public class BoardScript : MonoBehaviour, ITrackableEventHandler {
     private float changeHomerTimer, gameTimer, colorTimer, messageTimer;
     private bool finishedGame, newColor, boardTracked;
     public Color[] colors = new Color[]{ Color.yellow, new Color(0, 0, .7f), Color.white,
-        new Color(.34f, .07f, .44f), new Color(.7f, 0, 0), new Color(0, .7f, 0) };
+        new Color(.36f, .09f, .46f), new Color(.7f, 0, 0), new Color(0, .7f, 0) };
 
 	void Start ()
     {
