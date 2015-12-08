@@ -81,10 +81,19 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
     public void ChangeColor()
     {
         int noHits = Mathf.Min(boardScript.counter / 20 + 1, boardScript.maxNoHits);
-        if (!alternate && boardScript.noHits % noHits == 0)
-            color = boardScript.currentColor;
+        if (!alternate)
+        {
+            if (boardScript.noHits % noHits == 0)
+                color = boardScript.currentColor;
+            else
+                color = (HomerColor)(random.Next() % 6);
+        }
         else
+        {
             color = (HomerColor)(random.Next() % 6);
+            if (color == boardScript.currentColor)
+                color = (HomerColor)(((int)color + 1) % 6);
+        }
         Renderer homerRenderer = homer.GetComponent<Renderer>();
         if (((boardScript.counter > goldStart && random.NextDouble() < goldProbability) || boardScript.goldTimer > 0))
         {
