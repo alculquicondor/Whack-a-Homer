@@ -12,7 +12,7 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 
     private System.Random random;
     private HomerColor color;
-    private GameObject homer, arrow;
+    private GameObject homer, hammer;
     private BoardScript boardScript;
     private bool active;
     private float homerTime;
@@ -22,20 +22,20 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
 	void Start ()
     {
         homer = transform.Find("homer").gameObject;
-        arrow = transform.Find("arrow").gameObject;
-        boardScript = GameObject.Find("Board").GetComponent<BoardScript>();
+        hammer = transform.Find("hammer").gameObject;
+        boardScript = FindObjectOfType<BoardScript>();
 
         prevHomerId = -1;
         random = new System.Random(homerId * 10);
         active = false;
-        GetComponent<VirtualButtonBehaviour>().RegisterEventHandler(this);
+        transform.Find("HomerButton").GetComponent<VirtualButtonBehaviour>().RegisterEventHandler(this);
 	}
 
     void Deactivate()
     {
         active = false;
         homer.SetActive(false);
-        arrow.SetActive(false);
+        hammer.SetActive(false);
     }
 
     void Update ()
@@ -45,13 +45,13 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
             Deactivate();
         else if (homerTime > .8 * boardScript.changeHomerTimerLenght)
         {
-            homer.transform.localPosition = new Vector3(-6, 0.12f - (homerTime - .8f * boardScript.changeHomerTimerLenght) * .5f, 0);
+            homer.transform.localPosition = new Vector3(-4.273f, 0.5f - (homerTime - .8f * boardScript.changeHomerTimerLenght), 0.015f);
         }
         else if (homerTime < .1 * boardScript.changeHomerTimerLenght)
         {
-            homer.transform.localPosition = new Vector3(-6, 0.12f - (.1f * boardScript.changeHomerTimerLenght - homerTime) * .5f, 0);
+            homer.transform.localPosition = new Vector3(-4.273f, 0.5f - (.1f * boardScript.changeHomerTimerLenght - homerTime), 0.015f);
         }
-        arrow.transform.localPosition = new Vector3(.1f, .45f + Mathf.Sin(homerTime * 4f) * .05f, 0);
+        hammer.transform.localPosition = new Vector3(-0.245f, 1.85f + Mathf.Sin(homerTime * 4f) * .1f, -0.673f);
     }
 
     public void OnButtonPressed(VirtualButtonAbstractBehaviour vb)
@@ -113,9 +113,9 @@ public class HitScript : MonoBehaviour, IVirtualButtonEventHandler {
             */
         }
         if (color == boardScript.currentColor && boardScript.counter < 14)
-            arrow.SetActive(active);
+            hammer.SetActive(active);
         else
-            arrow.SetActive(false);
+            hammer.SetActive(false);
     }
 
 	void FixedUpdate ()
