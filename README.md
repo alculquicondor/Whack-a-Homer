@@ -41,7 +41,7 @@ elements relative to others, etc.
 - Get familiar with Unity and Cardboard SDK. [Here](https://developers.google.com/cardboard/unity/) is the documentation.
 - Integrate Vuforia with Cardboard SDK. [Here](https://developer.vuforia.com/library/articles/Solution/Integrating-Cardboard-SDK-050) are the steps. Make sure you are using Cardboard SDK
 version listed on the post (0.5.0 at the time of this writing).
-- Design your targets carefully. Use images with sharp edges. We found out that images
+- Design your [targets](https://developer.vuforia.com/library/articles/Best_Practices/Attributes-of-an-Ideal-Image-Target) carefully. Use images with sharp edges. We found out that images
 composed by stars are easy to track and contain good amount of features. Make sure your
 images get the maximum punctuation on Vuforia's Target Manager.
 - Learn how to design [virtual buttons](https://developer.vuforia.com/library/articles/Solution/How-To-Implement-Virtual-Buttons). Test the sensibility according to your needs.
