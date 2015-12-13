@@ -2,7 +2,9 @@
 
 A Tangible Augmented Reality videogame that challenges your concentration and memory.
 Being based on the popular arcade game Whack-A-Mole, you are presented Homers with
-colored t-shirts. You must hit the one that matches the color presented before on the board.
+colored shirts. You must hit the one that matches the color presented before on the board.
+
+![gameplay](https://raw.github.com/alculquicondor/Whack-a-Homer/master/doc/gameplay.jpg)
 
 Have fun and challenge your friends to beat your record!
 
